@@ -1,6 +1,6 @@
 'use strict';
 
-app.directive('userItem', function () {
+app.directive('userItem', function (Auth) {
   return {
     restrict: 'E',
     templateUrl: '/browser/app/user/item/user.item.html',
@@ -17,10 +17,17 @@ app.directive('userItem', function () {
         var hasInitialized = false;
         scope.$watch('user', function () {
           if (!hasInitialized) hasInitialized = true;
-          else scope.user.save();
+          else {
+            Auth.isAdmin()
+            .then( function (maybeAdmin) {
+              if(!maybeAdmin) return; 
+              else scope.user.save();
+            })
+          }
         }, true);
       }
       scope.removeUser = function () {
+        if(!Auth.isAdmin()) return;
         scope.user.destroy()
         .then(function () {
           scope.afterRemove();

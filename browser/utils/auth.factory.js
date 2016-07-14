@@ -1,7 +1,7 @@
 'use strict';
 
 app.factory('Auth', function ($http, $rootScope) {
-  return {
+  var obj = {
     login: function (info) {
       return $http.post('/auth/login', info)
       .then(function (response) {
@@ -25,6 +25,15 @@ app.factory('Auth', function ($http, $rootScope) {
       .then(function () {
         $rootScope.currentUser = null;
       });
+    },
+
+    isAdmin: function () {
+      return obj.fetchCurrentUser()
+        .then(function (user) {
+          return user.isAdmin;
+        }) 
+
     }
   }
+  return obj;
 });

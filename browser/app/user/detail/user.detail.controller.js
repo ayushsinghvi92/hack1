@@ -1,6 +1,6 @@
 'use strict';
 
-app.controller('UserDetailCtrl', function ($scope, user, Story, $state) {
+app.controller('UserDetailCtrl', function ($scope, Auth, user, Story, $state) {
   $scope.user = user;
   $scope.newStory = new Story({author_id: $scope.user.id});
   $scope.addStory = function () {
@@ -11,11 +11,17 @@ app.controller('UserDetailCtrl', function ($scope, user, Story, $state) {
     });
   };
   $scope.removeStory = function (story) {
-    story.destroy()
-    .then(function () {
-      var idx = $scope.user.stories.indexOf(story);
-      $scope.user.stories.splice(idx, 1);
-    });
+    Auth.isAdmin()
+      .then(function (maybeAdmin) {
+        console.log(maybeAdmin)
+        if(!maybeAdmin) return;
+        else story.destroy()
+      .then(function () {
+        var idx = $scope.stories.indexOf(story);
+        $scope.stories.splice(idx, 1);
+      });
+          
+    })
   };
   $scope.gotoUserList = function () {
     $state.go('users');
